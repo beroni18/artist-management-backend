@@ -6,10 +6,10 @@ const path = require('path');
 
 // Connexion à la base de données
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "artists"
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "",
+    database: process.env.DB_NAME || "artists"
 });
 
 // Configuration de multer pour le stockage des images
