@@ -38,7 +38,7 @@ const upload = multer({
 
 router.post('/artists', upload.single('artistImage'), (req, res) => {
     const { artistName, stageName, albumCount, socialMediaLinks, label, publishingHouse, careerStartDate } = req.body;
-    const artistImage = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null; // Utiliser l'URL absolue
+    const artistImage = req.file ? `http://artist-management-backend-api.onrender.com/uploads/${req.file.filename}` : null; // Utiliser l'URL absolue
 
     // Vérifiez que tous les champs requis sont présents
     if (!artistName) {
@@ -55,6 +55,7 @@ router.post('/artists', upload.single('artistImage'), (req, res) => {
         res.status(201).json({ message: "Artiste ajouté avec succès", artistId: result.insertId, artistImage: artistImage });
     });
 });
+
 
 
 // Récupérer un artiste par son ID
