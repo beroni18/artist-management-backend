@@ -38,7 +38,7 @@ const upload = multer({
 
 router.post('/artists', upload.single('artistImage'), (req, res) => {
     const { artistName, stageName, albumCount, socialMediaLinks, label, publishingHouse, careerStartDate } = req.body;
-    const artistImage = req.file ? `/uploads/${req.file.filename}` : null;
+    const artistImage = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null; // Utiliser l'URL absolue
 
     // Vérifiez que tous les champs requis sont présents
     if (!artistName) {
@@ -55,6 +55,7 @@ router.post('/artists', upload.single('artistImage'), (req, res) => {
         res.status(201).json({ message: "Artiste ajouté avec succès", artistId: result.insertId, artistImage: artistImage });
     });
 });
+
 
 // Récupérer un artiste par son ID
 router.get('/artists/:id', (req, res) => {
@@ -95,17 +96,28 @@ router.get('/artists', (req, res) => {
 // Rechercher un artiste par nom ou nom de scène
 router.get('/artists/search', (req, res) => {
     const searchTerm = req.query.term;
-    const query = `SELECT * FROM artists WHERE artistName LIKE ? OR stageName LIKE ?`;
     const formattedTerm = `%${searchTerm}%`;
-    
+    console.log("Search Term:", searchTerm); // Log de la valeur de searchTerm
+    console.log("Formatted Term:", formattedTerm); // Log de la valeur de formattedTerm
+
+    const query = `SELECT * FROM artists WHERE artistName LIKE ? OR stageName LIKE ?`;
+    console.log("SQL Query:", query); // Log de la requête SQL
+
     db.query(query, [formattedTerm, formattedTerm], (error, results) => {
         if (error) {
-            console.error("Error searching for artist:", error); // Erreur détaillée
+            console.error("Error searching for artist:", error); // Log de l'erreur
             return res.status(500).json({ error: "Error searching for artist" });
+        }
+        console.log("Query Results:", results); // Log des résultats de la requête SQL
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Artiste non trouvé" });
         }
         res.status(200).json(results);
     });
 });
+
+
+
 
 // Ajouter une note pour un artiste
 router.post('/ratings', (req, res) => {
