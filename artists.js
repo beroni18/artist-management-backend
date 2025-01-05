@@ -162,7 +162,8 @@ router.get('/artists/:id/average-rating', (req, res) => {
 router.put('/artists/:id', upload.single('artistImage'), (req, res) => {
     const artistId = req.params.id;
     const { artistName, stageName, albumCount, socialMediaLinks, label, publishingHouse, careerStartDate } = req.body;
-    const artistImage = req.file ? `/uploads/${req.file.filename}` : null;
+    const artistImage = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null; // Utiliser l'URL absolue
+
     const query = `UPDATE artists SET artistImage = ?, artistName = ?, stageName = ?, albumCount = ?, socialMediaLinks = ?, label = ?, publishingHouse = ?, careerStartDate = ? WHERE artistId = ?`;
 
     db.query(query, [artistImage, artistName, stageName, albumCount, socialMediaLinks, label, publishingHouse, careerStartDate, artistId], (error, result) => {
@@ -184,6 +185,7 @@ router.put('/artists/:id', upload.single('artistImage'), (req, res) => {
         res.status(200).json(updatedArtist);
     });
 });
+
 
 
 // Supprimer un artiste
